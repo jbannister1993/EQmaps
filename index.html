@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>EQmaps</title>
+	<link rel="stylesheet" href="/leaflet/leaflet.css" />
+	<style>
+		#map	{
+			width: 800px;
+			height: 600px;
+		}
+	</style>
+	<script type="text/javascript" src="/leaflet/leaflet.js"></script>
+	<script type="text/javascript">
+		var map
+		
+		function startup()
+		{
+			map = L.map ("map");
+			var attrib = "Map data copyright <a href='http://openstreetmap.org'>OpenStreetMap</a> contributors, Open Database License";	
+			var eqmap = new L.tileLayer ("http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", { attribution: attrib } );
+			map.setView(new L.LatLng(40,0), 2);
+			map.addLayer(eqmap);
+		}
+	</script>
+</head>
+<body onload="startup()">
+	<h1>Welcome to EQmaps</h1>
+	<div id="map"></div>
+</body>
+</html>
