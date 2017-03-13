@@ -12,6 +12,7 @@
 	<script type="text/javascript" src="/leaflet/leaflet.js"></script>
 	<script type="text/javascript">
 		var map
+		var markers = L.layerGroup();
 		
 		function startup()
 		{
@@ -20,6 +21,58 @@
 			var eqmap = new L.tileLayer ("http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", { attribution: attrib } );
 			map.setView(new L.LatLng(40,0), 2);
 			map.addLayer(eqmap);
+			
+			recentEarthquakeSearch();
+		}
+		
+		function recentEarthquakeSearch()
+		{
+			var xhr2 = new XMLHttpRequest();
+			xhr2.addEventListener ("load", recentEarthquakes);
+			xhr2.open("GET", "/web_services/recent.php");
+			xhr2.send();
+		}
+		
+		function recentEarthquakes(e)
+		{
+			markers.clearLayers();
+			var status = e.target.status;			
+			if(status == 200)
+			{
+				var data = JSON.parse(e.target.responseText);
+				for(var i=0; i<data.length; i++)
+				{
+					var location = data[i].location;
+					var lat = "Lat: " + data[i].latitude;
+					var lon = "Lon: " + data[i].longitude;
+					var mag = "Mag: " + data[i].magnitude;
+					var int = parseInt(data[i].date);
+					var timestamp = new Date(int);
+					var dateTime = timestamp.toISOString();
+					//var depth = data[i].depth;
+					//var url = data[i].url;
+					//var time = new Date(data[i].date);
+					//var year = time.getFullYear();
+					//var month = "0" + time.getMonth();
+					//var date = time.getDate();
+					//var hour = time.getHours();
+					//var minute = "0" + time.getMinutes();
+					//var second = "0" + time.getSeconds();
+					//var dateTime = date + "/" + month.substr(-2) + "/" + year + " at " + hour + ":" + minute.substr(-2) + ":" + second.substr(-2);
+					marker = L.marker([data[i].latitude, data[i].longitude]);
+					marker.bindPopup("<table><tr><td colspan = '3'>" + location + "</td></tr><tr><td colspan = '3'>" + dateTime + "</td></tr><tr><td>" + lat + "</td><td>" + lon + "</td><td>" + mag + "</td></tr></table>");
+					markers.addLayer(marker);
+				}
+				map.addLayer(markers);
+			}
+			else if(status == 404)
+			{
+				alert("No Recent Earthquakes found. Please try again later.");
+			}
+			else
+			{
+				alert("An unknown error has occurred. Please try again later.");
+			}
 		}
 	</script>
 </head>
