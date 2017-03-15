@@ -10,7 +10,7 @@ $latest = strtotime("now") * 1000;
 // Calculate 24 hours prior to now (86400000 = 24 hours in milleseconds)
 $earliest = $latest - 86400000;
 
-$search = $conn->prepare("SELECT * FROM earthquakes WHERE date >= ? AND date <= ?");
+$search = $conn->prepare("SELECT * FROM earthquakes WHERE date >= ? AND date <= ? ORDER BY date DESC;");
 $search->bindParam(1,$earliest);
 $search->bindParam(2,$latest);
 $search->execute();

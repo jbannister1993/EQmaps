@@ -40,30 +40,34 @@
 			if(status == 200)
 			{
 				var data = JSON.parse(e.target.responseText);
+				var heading = "<h1>Recent Earthquakes</h1>";
+				document.getElementById("heading").innerHTML = heading;
+				var list = "<hr />";
 				for(var i=0; i<data.length; i++)
 				{
 					var location = data[i].location;
 					var lat = "Lat: " + data[i].latitude;
 					var lon = "Lon: " + data[i].longitude;
-					var mag = "Mag: " + data[i].magnitude;
+					var mag = "Mag: " + data[i].magnitude + " md";
+					var depth = "Depth: " + data[i].depth + " km";
+					var url = "<a href = '" + data[i].url + "'>More Info</a>";
 					var int = parseInt(data[i].date);
-					var timestamp = new Date(int);
-					var dateTime = timestamp.toISOString();
-					//var depth = data[i].depth;
-					//var url = data[i].url;
-					//var time = new Date(data[i].date);
-					//var year = time.getFullYear();
-					//var month = "0" + time.getMonth();
-					//var date = time.getDate();
-					//var hour = time.getHours();
-					//var minute = "0" + time.getMinutes();
-					//var second = "0" + time.getSeconds();
-					//var dateTime = date + "/" + month.substr(-2) + "/" + year + " at " + hour + ":" + minute.substr(-2) + ":" + second.substr(-2);
+					var time = new Date(int);
+					//var dateTime = time.toISOString();
+					var year = time.getFullYear();
+					var month = "0" + time.getMonth();
+					var date = "0" + time.getDate();
+					var hour = "0" + time.getHours();
+					var minute = "0" + time.getMinutes();
+					var second = "0" + time.getSeconds();
+					var dateTime = date.substr(-2) + "/" + month.substr(-2) + "/" + year + " at " + hour.substr(-2) + ":" + minute.substr(-2) + ":" + second.substr(-2) + " (UTC)";
 					marker = L.marker([data[i].latitude, data[i].longitude]);
-					marker.bindPopup("<table><tr><td colspan = '3'>" + location + "</td></tr><tr><td colspan = '3'>" + dateTime + "</td></tr><tr><td>" + lat + "</td><td>" + lon + "</td><td>" + mag + "</td></tr></table>");
+					marker.bindPopup("<table><tr><td colspan = '4'>" + location + "</td></tr><tr><td colspan = '4'>" + dateTime + "</td></tr><tr><td>" + lat + "</td><td>" + lon + "</td><td>" + mag + "</td><td>" + depth + "</td></tr><tr><td colspan = '2'>Bookmark</td><td colspan = '2'>" + url + "</td></tr></table>");
+					list += "<table><tr><td>" + location + "</td><td>" + lat + "</td><td>" + mag + "</td><td>Bookmark</td></tr><tr><td>" + dateTime + "</td><td>" + lon + "</td><td>" + depth + "</td><td>" + url + "</td></tr></table><hr />";
 					markers.addLayer(marker);
 				}
 				map.addLayer(markers);
+				document.getElementById('list').innerHTML = list;
 			}
 			else if(status == 404)
 			{
@@ -79,5 +83,7 @@
 <body onload="startup()">
 	<h1>Welcome to EQmaps</h1>
 	<div id="map"></div>
+	<div id="heading"></div>
+	<div id="list"></div>
 </body>
 </html>
