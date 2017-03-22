@@ -40,6 +40,7 @@
 		
 		function userSearch()
 		{
+			$('#search').dialog('close');
 			var heading = "<h1>Search Results</h1>";
 			document.getElementById("heading").innerHTML = heading;
 			var xhr2 = new XMLHttpRequest();
@@ -106,6 +107,23 @@
 				alert("An unknown error has occurred. Please try again later.");
 			}
 		}
+		
+		function searchDialog()
+		{
+			$('#search').dialog( {
+							title: "Search for Earthquakes",
+							modal: true,
+							resizable: false,
+							buttons:
+								{	'Search'	:	userSearch,
+									'Cancel'	:	cancelSearch	}
+						} );
+		}
+		
+		function cancelSearch()
+		{
+			$('#search').dialog('close');
+		}
 	</script>
 </head>
 <body onload="startup()">
@@ -114,7 +132,7 @@
 	<div id="map"></div>
 	
 	<div id="buttons">
-		<input type='submit' value='Search' onClick='userSearch()' />
+		<input type='submit' value='Search' onClick='searchDialog()' />
 	</div>
 	
 	<div id="heading"></div>
