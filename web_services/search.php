@@ -6,35 +6,39 @@ $conn = new PDO("mysql:host=localhost;dbname=eqmap","eqmapsadmin","c#S{2;(]*s8^"
 //$conn = new PDO("mysql:host=localhost;dbname=jbannister","jbannister","oPu0phah");
 
 //Return an error if no data is returned in all fields
-if (!isset($_GET['earliest']) || $_GET['earliest'] == "" && !isset($_GET['latest']) || $_GET['latest'] == "" && !isset($_GET['min_depth']) || $_GET['min_depth'] == "" && !isset($_GET['max_depth']) || $_GET['max_depth'] == "" && !isset($_GET['min_mag']) || $_GET['min_mag'] == "" && !isset($_GET['max_mag']) || $_GET['max_mag'] == "" && !isset($_GET['location']) || $_GET['location'] == "")
+//Not working
+if ($_GET['earliest'] == "" && $_GET['latest'] == "" && $_GET['min_depth'] == "" && $_GET['max_depth'] == "" && $_GET['min_mag'] == "" && $_GET['max_mag'] == "" && $_GET['location'] == "")
 {
 	header("HTTP/1.1 400 Bad Request");
 }
 
 //Set earliest time to UNIX epoch if latest date entered but earliest date left blank
-if (!isset($_GET['earliest']) || $_GET['earliest'] == "" && isset($_GET['latest']) || $_GET['latest'] != "")
+//Not working
+if ($_GET['earliest'] == "" && $_GET['latest'] != "")
 {
-	$earliest = strtotime("1 January 1970") * 1000;
+	$earliest = strtotime("1 January 2017") * 1000;
 }
 else
 {
 	$early = $_GET['earliest'];
-	$earliest = strtotime($early) * 1000;
+	$efixed = str_replace("T", " ", $early);
+	$earliest = strtotime($efixed) * 1000;
 }
 
 //Set latest date to the current date and time if left blank but earliest date is entered
-if (isset($_GET['earliest']) || $_GET['earliest'] != "" && !isset($_GET['latest']) || $_GET['latest'] == "")
+if ($_GET['earliest'] != "" && $_GET['latest'] == "")
 {
 	$latest = strtotime("now") * 1000;
 }
 else
 {
 	$late = $_GET['latest'];
-	$latest = strtotime($late) * 1000;
+	$lfixed = str_replace("T", " ", $late);
+	$latest = strtotime($lfixed) * 1000;
 }
 
 //Set minimum depth to -9999 if only maximum depth is given
-if (!isset($_GET['min_depth']) || $_GET['min_depth'] == "" && isset($_GET['max_depth']) || $_GET['max_depth'] != "")
+if ($_GET['min_depth'] == "" && $_GET['max_depth'] != "")
 {
 	$min_depth = -9999;
 }
@@ -44,7 +48,7 @@ else
 }
 
 //Set maximum depth to 9999 if only minimum depth is given
-if (isset($_GET['min_depth']) || $_GET['min_depth'] != "" && !isset($_GET['max_depth']) || $_GET['max_depth'] == "")
+if ($_GET['min_depth'] != "" && $_GET['max_depth'] == "")
 {
 	$max_depth = 9999;
 }
@@ -54,7 +58,7 @@ else
 }
 
 //Set minimum magnitude to -99 if only maximum depth is given
-if (!isset($_GET['min_mag']) || $_GET['min_mag'] == "" && isset($_GET['max_mag']) || $_GET['max_mag'] != "")
+if ($_GET['min_mag'] == "" && $_GET['max_mag'] != "")
 {
 	$min_mag = -99;
 }
@@ -64,7 +68,7 @@ else
 }
 
 //Set maximum magnitude to 99 if only minimum depth is given
-if (isset($_GET['min_mag']) || $_GET['min_mag'] != "" && !isset($_GET['max_mag']) || $_GET['max_mag'] == "")
+if ($_GET['min_mag'] != "" && $_GET['max_mag'] == "")
 {
 	$max_mag = 99;
 }
@@ -74,7 +78,8 @@ else
 }
 
 //Returns an error if a value that is supposed to be the smallest is entered as the largest
-if($early >= $late || $min_depth >= $max_depth || $min_mag >= $max_mag)
+//Not working
+if($earliest >= $latest || $min_depth >= $max_depth || $min_mag >= $max_mag)
 {
 	header("HTTP/1.1 406 Not Acceptable");
 }
@@ -83,61 +88,71 @@ $location = $_GET['location'];
 
 //Begin query construction...
 $sql = "SELECT * FROM earthquakes WHERE";
-$date = false
-$depth = false
-$mag = false
-$place = false
+$date = false;
+$depth = false;
+$mag = false;
+$place = false;
 
-if(isset($_GET['earliest']) || isset($_GET['latest']))
+if($earliest != "" && $latest != "")
 {
-	$sql += " date >= :earliest AND date <= :latest AND";
+	$sql = $sql . " date >= :earliest AND date <= :latest AND";
 	$date = true;
 }
 
-if(isset($_GET['min_depth']) || isset($_GET['max_depth']))
+if($min_depth != "" && $max_depth != "")
 {
-	$sql += " depth >= :min_depth AND depth <= :max_depth AND";
+	$sql = $sql . " depth >= :min_depth AND depth <= :max_depth AND";
 	$depth = true;
 }
 
-if(isset($_GET['min_mag']) || isset($_GET['max_mag']))
+if($min_mag != "" && $max_mag != "")
 {
-	$sql += " magnitude >= :min_mag AND magnitude <= :max_mag AND";
+	$sql = $sql . " magnitude >= :min_mag AND magnitude <= :max_mag AND";
 	$mag = true;
 }
 
-if(isset($_GET['location']))
+if($location != "")
 {
-	$sql += " location LIKE CONCAT('%',':location','%') AND";
+	$sql = $sql . " location LIKE CONCAT('%',:location,'%') AND";
 	$place = true;
 }
 
-$query = substr($sql,0,-3);
+$qry = rtrim($sql,"A..Z");
+$qry = $qry . "ORDER BY date ASC;";
 
-$search = $conn->prepare($query);
+$search = $conn->prepare($qry);
 
 if($date == true)
 {
-	$search->bindParam(:earliest,$earliest);
-	$search->bindParam(:latest,$latest);
+	$search->bindParam(":earliest",$earliest);
+	$search->bindParam(":latest",$latest);
+	//echo $earliest;
+	//echo $latest;
 }
 
 if($depth == true)
 {
-	$search->bindParam(:min_depth,$min_depth);
-	$search->bindParam(:max_depth,$max_depth);
+	$search->bindParam(":min_depth",$min_depth);
+	$search->bindParam(":max_depth",$max_depth);
+	//echo $min_depth;
+	//echo $max_depth;
 }
 
 if($mag == true)
 {
-	$search->bindParam(:min_mag,$min_mag);
-	$search->bindParam(:max_mag,$max_mag);
+	$search->bindParam(":min_mag",$min_mag);
+	$search->bindParam(":max_mag",$max_mag);
+	//echo $min_mag;
+	//echo $max_mag;
 }
 
 if($place == true)
 {
-	$search->bindParam(:location,$location);
+	$search->bindParam(":location",$location);
+	//echo $location;
 }
+
+//print_r($search);
 
 //Execute search
 $search->execute();
@@ -161,7 +176,8 @@ else
 			
 	header("HTTP/1.1 200 OK");
 
-	echo json_encode($results);	
+	echo json_encode($results);
+	//print_r($results);
 }
 
 ?>

@@ -76,12 +76,14 @@
 					var time = new Date(int);
 					//var dateTime = time.toISOString();
 					var year = time.getFullYear();
-					var month = "0" + time.getMonth();
+					var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+					var month = months[time.getMonth()];
+					//var month = "0" + time.getMonth();
 					var date = "0" + time.getDate();
 					var hour = "0" + time.getHours();
 					var minute = "0" + time.getMinutes();
 					var second = "0" + time.getSeconds();
-					var dateTime = date.substr(-2) + "/" + month.substr(-2) + "/" + year + " at " + hour.substr(-2) + ":" + minute.substr(-2) + ":" + second.substr(-2) + " (UTC)";
+					var dateTime = date.substr(-2) + "-" + month + "-" + year + " at " + hour.substr(-2) + ":" + minute.substr(-2) + ":" + second.substr(-2) + " (UTC)";
 					marker = L.marker([data[i].latitude, data[i].longitude]);
 					marker.bindPopup("<table><tr><td colspan = '4'>" + location + "</td></tr><tr><td colspan = '4'>" + dateTime + "</td></tr><tr><td>" + lat + "</td><td>" + lon + "</td><td>" + mag + "</td><td>" + depth + "</td></tr><tr><td colspan = '2'>Bookmark</td><td colspan = '2'>" + url + "</td></tr></table>");
 					list += "<table><tr><td>" + location + "</td><td>" + lat + "</td><td>" + mag + "</td><td>Bookmark</td></tr><tr><td>" + dateTime + "</td><td>" + lon + "</td><td>" + depth + "</td><td>" + url + "</td></tr></table><hr />";
