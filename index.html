@@ -9,8 +9,13 @@
 	
 	<style>
 		#map	{
-			width: 800px;
-			height: 600px;
+			z-index: 1;
+			width: 1600px;
+			height: 800px;
+		}
+		
+		.form_desc	{
+			font-style: italic;
 		}
 	</style>
 	
@@ -128,6 +133,8 @@
 							title: "Search for Earthquakes",
 							modal: true,
 							resizable: false,
+							width: 800,
+							height: 600,
 							buttons:
 								{	'Search'	:	userSearch,
 									'Cancel'	:	cancelSearch	}
@@ -154,18 +161,26 @@
 	
 	<div id="search" style="display: none;">
 		<fieldset name="Date">
-			<label for "earliest">Between:</label><input type="datetime-local" name="earliest" id="earliest">
+			<legend>Date</legend>
+			<p class="form_desc">Enter a minimum and maximum date for your search. The minimum date is required whilst omission of the latter will results in today's date and time being used.</p><br />
+			<label for "earliest">Between:</label><input type="datetime-local" name="earliest" id="earliest" required>
 			<label for "latest">And:</label><input type="datetime-local" name="latest" id="latest">
 		</fieldset>
 		<fieldset name="Depth">
+			<legend>Depth</legend>
+			<p class="form_desc">Enter a minimum and maximum depth for your search. Neither are required but omission of the second value will search for all earthquakes deeper than the given depth and vice-versa.</p><br />
 			<label for "min_depth">Between:</label><input type="number" name="min_depth" id="min_depth">
 			<label for "max_depth">And:</label><input type="number" name="max_depth" id="max_depth">
 		</fieldset>
 		<fieldset name="Magnitude">
+			<legend>Magnitude</legend>
+			<p class="form_desc">Enter a minimum and maximum magnitude for your search. Neither are required but omission of the second value will search for all earthquakes of a greater magnitude than the given value and vice-versa.</p><br />
 			<label for "min_mag">Between:</label><input type="number" name="min_mag" id="min_mag">
 			<label for "max_mag">And:</label><input type="number" name="max_mag" id="max_mag">
 		</fieldset>
 		<fieldset name="Location">
+			<legend>Location</legend>
+			<p class="form_desc">Enter a search term if required. This can be either a country, a town, or an ocean name. If searching for within the United States, the state name can be used.</p><br />
 			<label for "location">Location:</label><input type="text" placeholder="e.g Japan, California" name="location" id="location">
 		</fieldset>
 	</div>
