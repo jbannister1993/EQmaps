@@ -6,17 +6,18 @@ $conn = new PDO("mysql:host=localhost;dbname=eqmap","eqmapsadmin","c#S{2;(]*s8^"
 //$conn = new PDO("mysql:host=localhost;dbname=jbannister","jbannister","oPu0phah");
 
 //Return an error if no data is returned in all fields
-//Not working
 if ($_GET['earliest'] == "" && $_GET['latest'] == "" && $_GET['min_depth'] == "" && $_GET['max_depth'] == "" && $_GET['min_mag'] == "" && $_GET['max_mag'] == "" && $_GET['location'] == "")
 {
 	header("HTTP/1.1 400 Bad Request");
+	die("400");
 }
 
 //Set earliest time to UNIX epoch if latest date entered but earliest date left blank
-//Not working
 if ($_GET['earliest'] == "" && $_GET['latest'] != "")
 {
-	$earliest = strtotime("1 January 2017") * 1000;
+	//$earliest = strtotime("1 January 2017") * 1000;
+	header("HTTP/1.1 413 Payload Too Large");
+	die("413");
 }
 else
 {
@@ -78,10 +79,10 @@ else
 }
 
 //Returns an error if a value that is supposed to be the smallest is entered as the largest
-//Not working
 if($earliest >= $latest || $min_depth >= $max_depth || $min_mag >= $max_mag)
 {
 	header("HTTP/1.1 406 Not Acceptable");
+	die("406");
 }
 
 $location = $_GET['location'];
@@ -95,30 +96,30 @@ $place = false;
 
 if($earliest != "" && $latest != "")
 {
-	$sql = $sql . " date >= :earliest AND date <= :latest AND";
+	$sql .= " date >= :earliest AND date <= :latest AND";
 	$date = true;
 }
 
 if($min_depth != "" && $max_depth != "")
 {
-	$sql = $sql . " depth >= :min_depth AND depth <= :max_depth AND";
+	$sql .= " depth >= :min_depth AND depth <= :max_depth AND";
 	$depth = true;
 }
 
 if($min_mag != "" && $max_mag != "")
 {
-	$sql = $sql . " magnitude >= :min_mag AND magnitude <= :max_mag AND";
+	$sql .= " magnitude >= :min_mag AND magnitude <= :max_mag AND";
 	$mag = true;
 }
 
 if($location != "")
 {
-	$sql = $sql . " location LIKE CONCAT('%',:location,'%') AND";
+	$sql .= " location LIKE CONCAT('%',:location,'%') AND";
 	$place = true;
 }
 
 $qry = rtrim($sql,"A..Z");
-$qry = $qry . "ORDER BY date ASC;";
+$qry .= "ORDER BY date ASC;";
 
 $search = $conn->prepare($qry);
 
@@ -163,6 +164,7 @@ $row = $search->fetch(PDO::FETCH_ASSOC);
 if ($row == false)
 {
 	header("HTTP/1.1 404 Not Found");
+	die("404");
 }
 //Send back result
 else

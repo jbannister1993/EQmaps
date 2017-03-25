@@ -1,18 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+	
 	<title>EQmaps</title>
+	
 	<link rel="stylesheet" type="text/css" href="/leaflet/leaflet.css" />
 	<link rel="stylesheet" type="text/css" href="/jqueryui/jquery-ui.css" />
+	
 	<style>
 		#map	{
 			width: 800px;
 			height: 600px;
 		}
 	</style>
+	
 	<script type="text/javascript" src="/leaflet/leaflet.js"></script>
 	<script type="text/javascript" src="/jqueryui/external/jquery/jquery.js"></script>
 	<script type="text/javascript" src="/jqueryui/jquery-ui.min.js"></script>
+	
 	<script type="text/javascript">
 		var map
 		var markers = L.layerGroup();
@@ -59,11 +64,13 @@
 		function populateList(e)
 		{
 			markers.clearLayers();
-			var status = e.target.status;			
+			var status = e.target.status;	
+					
 			if(status == 200)
 			{
 				var data = JSON.parse(e.target.responseText);
 				var list = "<hr />";
+				
 				for(var i=0; i<data.length; i++)
 				{
 					var location = data[i].location;
@@ -89,6 +96,7 @@
 					list += "<table><tr><td>" + location + "</td><td>" + lat + "</td><td>" + mag + "</td><td>Bookmark</td></tr><tr><td>" + dateTime + "</td><td>" + lon + "</td><td>" + depth + "</td><td>" + url + "</td></tr></table><hr />";
 					markers.addLayer(marker);
 				}
+				
 				map.addLayer(markers);
 				document.getElementById('list').innerHTML = list;
 			}
@@ -103,6 +111,10 @@
 			else if(status == 406)
 			{
 				alert("Your search was invalid. Please try a different search.")
+			}
+			else if(status == 413)
+			{
+				alert("An earliest date must be entered to prevent server overload!");
 			}
 			else
 			{
