@@ -6,7 +6,7 @@ if(isset($_SESSION["guardian"]))
 {
 	$id = $_SESSION["guardian"];
 	$header = """<input type='submit' value='Bookmarks' onClick='bookmarks()'>
-				<input type='submit' value='My Account' onClick='account()'>
+				<input type='submit' value='My Account' onClick='accountDialog()'>
 				<input type='submit' value='Logout' onClick='<?php logout() ?>'>
 				<input type='hidden' value='$id' id='user_id'>""";
 }
@@ -67,6 +67,7 @@ function logout()
 		
 		function recentEarthquakeSearch()
 		{
+			bookmark = false;
 			var heading = "<h1>Recent Earthquakes</h1>";
 			document.getElementById("heading").innerHTML = heading;
 			var xhr2 = new XMLHttpRequest();
@@ -78,6 +79,7 @@ function logout()
 		function userSearch()
 		{
 			$('#search').dialog('close');
+			bookmark = false;
 			var heading = "<h1>Search Results</h1>";
 			document.getElementById("heading").innerHTML = heading;
 			var xhr2 = new XMLHttpRequest();
@@ -105,11 +107,11 @@ function logout()
 				
 				if(bookmark == true)
 				{
-					var book = "<a href = 'removeBookmark()'>Remove</a>";
+					var book = "<a href = 'removeBookmark(" + data[i].id + ")'>Remove</a>";
 				}
 				else
 				{
-					var book = "<a href = 'addBookmark()'>Bookmark</a>";
+					var book = "<a href = 'addBookmark(" + data[i].id + ")'>Bookmark</a>";
 				}
 				
 				for(var i=0; i<data.length; i++)
@@ -230,6 +232,10 @@ function logout()
 			{
 				alert("You must enter both a username and a password!");
 			}
+			else if(status == 406)
+			{
+				alert("Username cannot contain special characters!");
+			}
 			else if(status == 409)
 			{
 				alert("Username already exists! Sorry! Please try again.");
@@ -273,6 +279,10 @@ function logout()
 			{
 				alert("Username/Password combination incorrect!");
 			}
+			else if(status == 404)
+			{
+				alert("Account does not exist!");
+			}
 			else
 			{
 				alert("An unknown error has occurred. Please try again later.");
@@ -281,38 +291,141 @@ function logout()
 		
 		function bookmarks()
 		{
+			bookmark = true;
 			var heading = "<h1>Bookmarked Earthquakes</h1>";
 			document.getElementById("heading").innerHTML = heading;
-			var id = document.getElementById("id").value;
+			var id = document.getElementById("user_id").value;
 			var xhr2 = new XMLHttpRequest();
 			xhr2.addEventListener ("load", populateList);
 			xhr2.open("GET", "bookmarks.php?id=" + id);
 			xhr2.send();
 		}
 		
-		function account()
-		{
-			//Placeholder
+		function accountDialog()
+		{		
+			$('#account').dialog( {
+							title: "Account Settings",
+							modal: true,
+							resizable: false,
+							width: 400,
+							height: 400,
+							buttons:
+								{	'Delete Account'		:	deleteDialog,
+									'Cancel'				:	function() {	$(this).dialog('close')	}	}
+						} );
 		}
 		
-		function addBookmark()
+		function addBookmark(eid)
 		{
-			//Placeholder
+			var uid = document.getElementById("user_id").value;
+			var xhr2 = new XMLHttpRequest();
+			xhr2.addEventListener ("load", bookmarkAdded);
+			xhr2.open("POST", "addbookmark.php?uid=" + uid + "&eid=" + eid);
+			xhr2.send();
 		}
 		
-		function removeBookmark()
+		function bookmarkAdded(e)
 		{
-			//Placeholder
+			var status = e.target.status;
+			
+			if(status == 200)
+			{
+				alert("Bookmark successfully added!");
+			}
+			else if(status == 400 || status == 404)
+			{
+				alert("Earthquake does not exist!");
+			}
+			else if(status == 401)
+			{
+				alert("You must be logged in to bookmark an earthquake!");
+			}
+			else if(status == 409)
+			{
+				alert("You have already bookmarked this earthquake!");
+			}
+			else
+			{
+				alert("An unknown error has occurred. Please try again later.");
+			}
 		}
 		
-		function changePassword()
+		function removeBookmark(eid)
 		{
-			//Placeholder
+			var uid = document.getElementById("user_id").value;
+			var xhr2 = new XMLHttpRequest();
+			xhr2.addEventListener ("load", bookmarkRemoved);
+			xhr2.open("POST", "removebookmark.php?uid=" + uid + "&eid=" + eid);
+			xhr2.send();
+		}
+		
+		function bookmarkRemoved(e)
+		{
+			var status = e.target.status;
+			
+			if(status == 200)
+			{
+				alert("Bookmark successfully removed!");
+			}
+			else if(status == 400 || status == 404)
+			{
+				alert("Earthquake does not exist!");
+			}
+			else if(status == 401)
+			{
+				alert("You must be logged in to remove a bookmark!");
+			}
+			else if(status == 410)
+			{
+				alert("This earthquake is not bookmarked!");
+			}
+			else
+			{
+				alert("An unknown error has occurred. Please try again later.");
+			}
+		}
+		
+		function deleteDialog()
+		{		
+			$('#account').dialog('close');
+			$('#delete').dialog( {
+							title: "Delete Account",
+							modal: true,
+							resizable: false,
+							width: 400,
+							height: 400,
+							buttons:
+								{	'Confirm'				:	deleteAccount,
+									'Cancel'				:	function() {	$(this).dialog('close')	}	}
+						} );
 		}
 		
 		function deleteAccount()
 		{
-			//Placeholder
+			$('#delete').dialog('close');
+			var id = document.getElementById("user_id").value;
+			var xhr2 = new XMLHttpRequest();
+			xhr2.addEventListener ("load", accountDeleted);
+			xhr2.open("POST", "deleteaccount.php?id=" + id);
+			xhr2.send();
+		}
+		
+		function accountDeleted(e)
+		{
+			var status = e.target.status;
+			
+			if(status == 200)
+			{
+				location.reload(true);
+			}
+			else if(status == 400 || status == 404)
+			{
+				alert("Account does not exist!");
+			}
+			else
+			{
+				alert("An unknown error has occurred. Please try again later.");
+			}
 		}
 
 	</script>
@@ -327,6 +440,7 @@ function logout()
 	
 	<div id="buttons">
 		<input type='submit' value='Search' onClick='searchDialog()' />
+		<input type='submit' value='Recent' onClick='recentEarthquakes()' />
 	</div>
 	
 	<div id="heading"></div>
@@ -360,8 +474,15 @@ function logout()
 	
 	<div id="reglog" style="display: none;">
 		<label for "username">Username:</label><input type="text" placeholder="4-16 characters allowed" maxlength="16" name="username" id="username"><br />
-		<label for "password">Password:</label><input type="password" placeholder="8-32 characters allowed" maxlength="32" name="password" id="password">
+		<label for "password">Password:</label><input type="password" name="password" id="password">
 	</div>
 
+	<div id="account" style="display: none;">
+		<p class="form_desc">This menu allows you to change the settings on your account.</p>
+	</div>
+	
+	<div id="delete" style="display: none;">
+		<p class="form_desc">This will delete your account and all your bookmarks permanently. Are you sure?</p>
+	</div>
 </body>
 </html>
