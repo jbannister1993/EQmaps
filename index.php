@@ -4,11 +4,9 @@ session_start();
 
 if(isset($_SESSION["guardian"]))
 {
-	$id = $_SESSION["guardian"];
 	$header = "<input type='submit' value='Bookmarks' onClick='bookmarks()'>
 				<input type='submit' value='My Account' onClick='accountDialog()'>
-				<a href='logout.php'>Logout</a>
-				<input type='hidden' value='$id' id='user_id'>";
+				<a href='logout.php'>Logout</a>";
 }
 else
 {
@@ -296,10 +294,9 @@ else
 			bookmark = true;
 			var heading = "<h1>Bookmarked Earthquakes</h1>";
 			document.getElementById("heading").innerHTML = heading;
-			var id = document.getElementById("user_id").value;
 			var xhr2 = new XMLHttpRequest();
 			xhr2.addEventListener ("load", populateList);
-			xhr2.open("GET", "bookmarks.php?id=" + id);
+			xhr2.open("GET", "bookmarks.php");
 			xhr2.send();
 		}
 		
@@ -319,12 +316,11 @@ else
 		
 		function addBookmark(eid)
 		{
-			var uid = document.getElementById("user_id").value;
 			var xhr2 = new XMLHttpRequest();
 			xhr2.addEventListener ("load", bookmarkAdded);
 			xhr2.open("POST", "addbookmark.php");
 			xhr2.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-			xhr2.send("uid=" + uid + "&eid=" + eid);
+			xhr2.send("eid=" + eid);
 		}
 		
 		function bookmarkAdded(e)
@@ -355,12 +351,11 @@ else
 		
 		function removeBookmark(eid)
 		{
-			var uid = document.getElementById("user_id").value;
 			var xhr2 = new XMLHttpRequest();
 			xhr2.addEventListener ("load", bookmarkRemoved);
 			xhr2.open("POST", "removebookmark.php");
 			xhr2.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-			xhr2.send("uid=" + uid + "&eid=" + eid);
+			xhr2.send("eid=" + eid);
 		}
 		
 		function bookmarkRemoved(e)
@@ -407,12 +402,10 @@ else
 		function deleteAccount()
 		{
 			$('#delete').dialog('close');
-			var id = document.getElementById("user_id").value;
 			var xhr2 = new XMLHttpRequest();
 			xhr2.addEventListener ("load", accountDeleted);
 			xhr2.open("POST", "deleteaccount.php");
-			xhr2.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-			xhr2.send("id=" + id);
+			xhr2.send();
 		}
 		
 		function accountDeleted(e)
@@ -423,9 +416,9 @@ else
 			{
 				location.reload(true);
 			}
-			else if(status == 400 || status == 404)
+			else if(status == 401)
 			{
-				alert("Account does not exist!");
+				alert("You must be logged in to delete your account!");
 			}
 			else
 			{

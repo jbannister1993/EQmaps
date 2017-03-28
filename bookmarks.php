@@ -1,18 +1,19 @@
 <?php
 
+session_start();
 header("Content-type: application/json");
 
 $conn = new PDO("mysql:host=localhost;dbname=eqmap","eqmapsadmin","c#S{2;(]*s8^");
 //$conn = new PDO("mysql:host=localhost;dbname=jbannister","jbannister","oPu0phah");
 
-if(!isset($_GET["id"]))
+if(!isset($_SESSION["guardian"]))
 {
 	header("HTTP/1.1 401 Unauthorised");
 	die("401");
 }
 else
 {
-	$id = $_GET["id"];
+	$id = $_SESSION["guardian"];
 }
 
 $checkbook = $conn->prepare("SELECT * FROM bookmarks, earthquakes WHERE quake_id=id AND user_id=?");

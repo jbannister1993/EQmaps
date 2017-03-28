@@ -1,5 +1,7 @@
 <?php
 
+session_start();
+
 $conn = new PDO("mysql:host=localhost;dbname=eqmap","eqmapsadmin","c#S{2;(]*s8^");
 //$conn = new PDO("mysql:host=localhost;dbname=jbannister","jbannister","oPu0phah");
 
@@ -8,14 +10,14 @@ if(!isset($_POST["eid"]))
 	header("HTTP/1.1 400 Bad Request");
 	die("400");
 }
-else if(!isset($_POST["uid"]))
+else if(!isset($_SESSION["guardian"]))
 {
 	header("HTTP/1.1 401 Unauthorized");
 	die("401");
 }
 else
 {
-	$uid = $_POST["uid"];
+	$uid = $_SESSION["guardian"];
 	$eid = $_POST["eid"];
 }
 
