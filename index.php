@@ -103,11 +103,11 @@ else
 				{
 					if(bookmark == true)
 					{
-						var book = "<a href = 'removeBookmark(" + data[i].id + ")'>Remove</a>";
+						var book = "<input type='submit' value='Remove' onClick='removeBookmark(" + data[i].id + ")'>";
 					}
 					else
 					{
-						var book = "<a href = 'addBookmark(" + data[i].id + ")'>Bookmark</a>";
+						var book = "<input type='submit' value='Bookmark' onClick='addBookmark(" + data[i].id + ")'>";
 					}
 					
 					var location = data[i].location;
@@ -141,6 +141,10 @@ else
 			{
 				alert("You must fill in at least one search term");
 			}
+			else if(status == 401)
+			{
+				alert("You must be logged in to view your bookmarks");
+			}
 			else if(status == 404)
 			{
 				alert("No results found. Please try new search criteria or try again later.");
@@ -152,6 +156,10 @@ else
 			else if(status == 413)
 			{
 				alert("An earliest date must be entered to prevent server overload!");
+			}
+			else if(status == 417)
+			{
+				alert("User has no bookmarks!");
 			}
 			else
 			{
@@ -314,8 +322,9 @@ else
 			var uid = document.getElementById("user_id").value;
 			var xhr2 = new XMLHttpRequest();
 			xhr2.addEventListener ("load", bookmarkAdded);
-			xhr2.open("POST", "addbookmark.php?uid=" + uid + "&eid=" + eid);
-			xhr2.send();
+			xhr2.open("POST", "addbookmark.php");
+			xhr2.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+			xhr2.send("uid=" + uid + "&eid=" + eid);
 		}
 		
 		function bookmarkAdded(e)
@@ -349,8 +358,9 @@ else
 			var uid = document.getElementById("user_id").value;
 			var xhr2 = new XMLHttpRequest();
 			xhr2.addEventListener ("load", bookmarkRemoved);
-			xhr2.open("POST", "removebookmark.php?uid=" + uid + "&eid=" + eid);
-			xhr2.send();
+			xhr2.open("POST", "removebookmark.php");
+			xhr2.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+			xhr2.send("uid=" + uid + "&eid=" + eid);
 		}
 		
 		function bookmarkRemoved(e)
@@ -369,7 +379,7 @@ else
 			{
 				alert("You must be logged in to remove a bookmark!");
 			}
-			else if(status == 410)
+			else if(status == 417)
 			{
 				alert("This earthquake is not bookmarked!");
 			}
@@ -400,8 +410,9 @@ else
 			var id = document.getElementById("user_id").value;
 			var xhr2 = new XMLHttpRequest();
 			xhr2.addEventListener ("load", accountDeleted);
-			xhr2.open("POST", "deleteaccount.php?id=" + id);
-			xhr2.send();
+			xhr2.open("POST", "deleteaccount.php");
+			xhr2.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+			xhr2.send("id=" + id);
 		}
 		
 		function accountDeleted(e)
