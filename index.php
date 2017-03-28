@@ -5,21 +5,15 @@ session_start();
 if(isset($_SESSION["guardian"]))
 {
 	$id = $_SESSION["guardian"];
-	$header = """<input type='submit' value='Bookmarks' onClick='bookmarks()'>
+	$header = "<input type='submit' value='Bookmarks' onClick='bookmarks()'>
 				<input type='submit' value='My Account' onClick='accountDialog()'>
-				<input type='submit' value='Logout' onClick='<?php logout() ?>'>
-				<input type='hidden' value='$id' id='user_id'>""";
+				<a href='logout.php'>Logout</a>
+				<input type='hidden' value='$id' id='user_id'>";
 }
 else
 {
-	$header = """<input type='submit' value='Login' onClick='loginDialog()'>
-				<input type='submit' value='Register' onClick='registerDialog()'>""";
-}
-
-function logout()
-{
-	session_destroy();
-	header("Refresh:0");
+	$header = "<input type='submit' value='Login' onClick='loginDialog()'>
+				<input type='submit' value='Register' onClick='registerDialog()'>";
 }
 
 ?>
@@ -72,7 +66,7 @@ function logout()
 			document.getElementById("heading").innerHTML = heading;
 			var xhr2 = new XMLHttpRequest();
 			xhr2.addEventListener ("load", populateList);
-			xhr2.open("GET", "/web_services/recent.php");
+			xhr2.open("GET", "recent.php");
 			xhr2.send();
 		}
 		
@@ -91,7 +85,7 @@ function logout()
 			var min_mag = document.getElementById("min_mag").value;
 			var max_mag = document.getElementById("max_mag").value;
 			var location = document.getElementById("location").value;
-			xhr2.open("GET", "/web_services/search.php?earliest=" + earliest + "&latest=" + latest + "&min_depth=" + min_depth + "&max_depth=" + max_depth + "&min_mag=" + min_mag + "&max_mag=" + max_mag + "&location=" + location);
+			xhr2.open("GET", "search.php?earliest=" + earliest + "&latest=" + latest + "&min_depth=" + min_depth + "&max_depth=" + max_depth + "&min_mag=" + min_mag + "&max_mag=" + max_mag + "&location=" + location);
 			xhr2.send();
 		}
 		
@@ -105,17 +99,17 @@ function logout()
 				var data = JSON.parse(e.target.responseText);
 				var list = "<hr />";
 				
-				if(bookmark == true)
-				{
-					var book = "<a href = 'removeBookmark(" + data[i].id + ")'>Remove</a>";
-				}
-				else
-				{
-					var book = "<a href = 'addBookmark(" + data[i].id + ")'>Bookmark</a>";
-				}
-				
 				for(var i=0; i<data.length; i++)
 				{
+					if(bookmark == true)
+					{
+						var book = "<a href = 'removeBookmark(" + data[i].id + ")'>Remove</a>";
+					}
+					else
+					{
+						var book = "<a href = 'addBookmark(" + data[i].id + ")'>Bookmark</a>";
+					}
+					
 					var location = data[i].location;
 					var lat = "Lat: " + data[i].latitude;
 					var lon = "Lon: " + data[i].longitude;
@@ -440,7 +434,7 @@ function logout()
 	
 	<div id="buttons">
 		<input type='submit' value='Search' onClick='searchDialog()' />
-		<input type='submit' value='Recent' onClick='recentEarthquakes()' />
+		<input type='submit' value='Recent' onClick='recentEarthquakeSearch()' />
 	</div>
 	
 	<div id="heading"></div>

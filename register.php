@@ -3,6 +3,9 @@
 $conn = new PDO("mysql:host=localhost;dbname=eqmap","eqmapsadmin","c#S{2;(]*s8^");
 //$conn = new PDO("mysql:host=localhost;dbname=jbannister","jbannister","oPu0phah");
 
+//Workaround for FastCGI php
+list($_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW']) = explode(':' , base64_decode(substr($_SERVER['HTTP_AUTHORIZATION'], 6)));
+
 if(!isset($_SERVER["PHP_AUTH_USER"]) || !isset($_SERVER["PHP_AUTH_PW"]))
 {
 	header("HTTP/1.1 400 Bad Request");
@@ -14,6 +17,18 @@ else
 	$pass = $_SERVER["PHP_AUTH_PW"];
 	$password = password_hash($pass, PASSWORD_BCRYPT);
 }
+
+//if(!isset($_POST["user"]) || !isset($_POST["pass"]))
+//{
+//	header("HTTP/1.1 400 Bad Request");
+//	die("400");
+//}
+//else
+//{
+//	$user = $_POST["user"];
+//	$pass = $_POST["pass"];
+//	$password = password_hash($pass, PASSWORD_BCRYPT);
+//}
 
 if(strlen($user) > 16 || strlen($user) < 4)
 {

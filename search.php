@@ -79,7 +79,7 @@ else
 }
 
 //Returns an error if a value that is supposed to be the smallest is entered as the largest
-if($earliest >= $latest || $min_depth >= $max_depth || $min_mag >= $max_mag)
+if($earliest > $latest || $min_depth > $max_depth || $min_mag > $max_mag)
 {
 	header("HTTP/1.1 406 Not Acceptable");
 	die("406");
