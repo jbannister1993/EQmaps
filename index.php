@@ -2,16 +2,17 @@
 
 session_start();
 
-if(isset($_SESSION["guardian"]))
+if(isset($_SESSION["guardian_id"]))
 {
-	$header = "<input type='submit' value='Bookmarks' onClick='bookmarks()'>
-				<input type='submit' value='My Account' onClick='accountDialog()'>
-				<a href='logout.php'>Logout</a>";
+	$uname = $_SESSION["guardian_name"];
+	$header = "<div id='links'><input type='submit' value='Bookmarks' onClick='bookmarks()' class='header_buttons' />
+				<input type='submit' value='My Account' onClick='accountDialog()' class='header_buttons' />
+				<a href='logout.php' class='header_buttons'>Logout</a></div>";
 }
 else
 {
-	$header = "<input type='submit' value='Login' onClick='loginDialog()'>
-				<input type='submit' value='Register' onClick='registerDialog()'>";
+	$header = "<div id='links'><input type='submit' value='Login' onClick='loginDialog()' class='header_buttons' />
+				<input type='submit' value='Register' onClick='registerDialog()' class='header_buttons' /></div>";
 }
 
 ?>
@@ -26,14 +27,95 @@ else
 	<link rel="stylesheet" type="text/css" href="/jqueryui/jquery-ui.css" />
 	
 	<style>
+		html, body	{
+			height: 100%;
+			margin: 0px;
+			font-family: "Arial Black", Gadget, sans-serif;
+		}
+		
+		h1	{
+			padding-left: 3%;
+		}
+		
+		h2	{
+			padding: 2%;
+		}
+		
+		p	{
+			font-size: 14px;
+		}
+		
+		table, tr, td	{
+			font-size: 12px;
+		}
+	
+		header	{
+			width: 100%;
+			background-color: rgba(155, 100, 25, 1);
+			height: 10%;
+			z-index: 2;
+		}
+		
+		#logo	{
+			width: 30%;
+			height: 100%;
+			background-image: url(images/eqmap2.png);
+			background-position: 50% 40%;
+			background-repeat: no-repeat;
+			display: block;
+			float: left;
+		}
+		
+		#links	{
+			float: right;
+			position: relative;
+			display: block;
+			margin: 10px;
+		}
+		
+		#buttons	{
+			float: left;
+			position: relative;
+			display: block;
+			margin: 10px;
+		}
+		
+		#wrapper	{
+			width: 30%;
+			float: left;
+			background-color: rgba(155, 100, 25, 1);
+			height: 90%;
+			overflow: scroll;
+		}
+	
 		#map	{
 			z-index: 1;
-			width: 1600px;
-			height: 800px;
+			width: 70%;
+			height: 90%;
+			float: left;
 		}
 		
 		.form_desc	{
 			font-style: italic;
+		}
+		
+		.header_buttons	{
+			background-color: rgba(205, 100, 25, 1);
+		    border: 1px solid black;
+		    color: white;
+		    padding: 15px 32px;
+		    text-align: center;
+		    text-decoration: none;
+		    display: inline-block;
+			font-family: "Arial Black", Gadget, sans-serif;
+			font-size: 16px;
+		}
+		
+		.header_buttons:hover	{
+			background-color: white;
+		    color: black;
+		    text-decoration: underline;
+			cursor: pointer;
 		}
 	</style>
 	
@@ -51,7 +133,7 @@ else
 			map = L.map ("map");
 			var attrib = "Map data copyright <a href='http://openstreetmap.org'>OpenStreetMap</a> contributors, Open Database License";	
 			var eqmap = new L.tileLayer ("http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", { attribution: attrib } );
-			map.setView(new L.LatLng(40,0), 2);
+			map.setView(new L.LatLng(30,-50), 3);
 			map.addLayer(eqmap);
 			
 			recentEarthquakeSearch();
@@ -101,11 +183,11 @@ else
 				{
 					if(bookmark == true)
 					{
-						var book = "<input type='submit' value='Remove' onClick='removeBookmark(" + data[i].id + ")'>";
+						var book = "<input type='submit' value='Remove' onClick='removeBookmark(" + data[i].id + ")' />";
 					}
 					else
 					{
-						var book = "<input type='submit' value='Bookmark' onClick='addBookmark(" + data[i].id + ")'>";
+						var book = "<input type='submit' value='Bookmark' onClick='addBookmark(" + data[i].id + ")' />";
 					}
 					
 					var location = data[i].location;
@@ -430,20 +512,21 @@ else
 </head>
 <body onload="startup()">
 	<header>
-		<h1>Welcome to EQmaps</h1>
+		<div id="logo"></div>
+		<div id="buttons">
+			<input type='submit' value='Search' onClick='searchDialog()' class='header_buttons' />
+			<input type='submit' value='Recent' onClick='recentEarthquakeSearch()' class='header_buttons' />
+		</div>
 		<?php echo $header ?>
 	</header>
 	
 	<div id="map"></div>
 	
-	<div id="buttons">
-		<input type='submit' value='Search' onClick='searchDialog()' />
-		<input type='submit' value='Recent' onClick='recentEarthquakeSearch()' />
+	<div id="wrapper">
+		<div id="heading"></div>
+		<div id="list"></div>
 	</div>
-	
-	<div id="heading"></div>
-	<div id="list"></div>
-	
+
 	<div id="search" style="display: none;">
 		<fieldset name="Date">
 			<legend>Date</legend>
@@ -476,7 +559,8 @@ else
 	</div>
 
 	<div id="account" style="display: none;">
-		<p class="form_desc">This menu allows you to change the settings on your account.</p>
+		<p class="form_desc">This menu allows you to change the settings on your account.</p><br />
+		<h2>Currently logged in as: <?php echo $uname ?></h2>
 	</div>
 	
 	<div id="delete" style="display: none;">

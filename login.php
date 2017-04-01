@@ -42,7 +42,8 @@ if($row == false)
 }
 else if(password_verify($pass, $row["password"]))
 {
-	$_SESSION["guardian"] = $row["id"];
+	$_SESSION["guardian_id"] = $row["id"];
+	$_SESSION["guardian_name"] = $row["username"];
 	header("HTTP/1.1 200 OK");
 }
 else

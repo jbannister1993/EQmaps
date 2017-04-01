@@ -10,14 +10,14 @@ if(!isset($_POST["eid"]))
 	header("HTTP/1.1 400 Bad Request");
 	die("400");
 }
-else if(!isset($_SESSION["guardian"]))
+else if(!isset($_SESSION["guardian_id"]))
 {
 	header("HTTP/1.1 401 Unauthorized");
 	die("401");
 }
 else
 {
-	$uid = $_SESSION["guardian"];
+	$uid = $_SESSION["guardian_id"];
 	$eid = $_POST["eid"];
 }
 
